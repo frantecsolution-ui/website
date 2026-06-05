@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard | Franktec – AD Solutions</title>
+    <meta name="description" content="Admin dashboard for contact messages and quote requests." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="navbar">
+      <div class="container nav-wrap">
+        <a class="logo" href="index.html">Franktec – AD Solutions</a>
+        <button type="button" class="menu-btn" aria-label="Toggle menu">Menu</button>
+        <nav class="menu">
+          <a href="index.html">Home</a>
+          <a href="about.html">About</a>
+          <a href="services.html">Services</a>
+          <a href="pricing.html">Pricing</a>
+          <a href="portfolio.html">Portfolio</a>
+          <a href="contact.html">Contact</a>
+          <a href="quote-request.html">Quote</a>
+          <a class="active" href="/admin">Admin</a>
+        </nav>
+      </div>
+    </header>
+
+    <section class="section">
+      <div class="container">
+        <h1 class="section-title">Admin dashboard</h1>
+        <p class="section-sub">Review submitted contact messages and quote requests (requires the Flask backend).</p>
+
+        <article class="card">
+          <div class="card-body">
+            <div style="display:flex; align-items:center; justify-content:space-between">
+              <h2 style="margin:0">Contact messages</h2>
+              <div>
+                <button id="refreshBtn" class="btn" style="margin-right:8px">Refresh</button>
+                <small id="lastUpdated" style="color:var(--muted)"></small>
+              </div>
+            </div>
+            <div id="contactList">Loading...</div>
+          </div>
+        </article>
+
+        <article class="card" style="margin-top: 1rem">
+          <div class="card-body">
+            <div style="display:flex; align-items:center; justify-content:space-between">
+              <h2 style="margin:0">Quote requests</h2>
+              <div>
+                <button id="printQuotesBtn" class="btn" style="margin-right:8px">Print</button>
+                <button id="downloadQuotesBtn" class="btn btn-accent">Save CSV</button>
+              </div>
+            </div>
+            <div id="quoteList">Loading...</div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <footer>
+      <div class="container footer-grid">
+        <div>
+          <h3>Franktec – AD Solutions</h3>
+          <p>Full-service marketing communications and creative support in Ghana.</p>
+        </div>
+        <div>
+          <h4>Quick links</h4>
+          <p><a href="services.html">Services</a></p>
+          <p><a href="pricing.html">Pricing</a></p>
+          <p><a href="contact.html">Contact</a></p>
+        </div>
+        <div>
+          <h4>Contact</h4>
+          <p>
+            <a href="tel:+233234100444">+233 (0) 234 100 444</a> ·
+            <a href="tel:+233257063910">+233 (0) 257 063 910</a>
+          </p>
+          <p><a href="mailto:frantecsolution@gmail.com">frantecsolution@gmail.com</a></p>
+          <p>Bubiashie, Nii Asere Ayitey Road, opposite Accra Academy North Gate</p>
+        </div>
+      </div>
+      <div class="copy">&copy; <span class="year"></span> Franktec – AD Solutions. All rights reserved.</div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+      function escapeHtml(value) {
+        return String(value ?? "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#39;");
+      }
+
+      function formatDate(isoValue) {
+        if (!isoValue) return "-";
+        const date = new Date(isoValue);
+        return date.toLocaleString();
+      }
+
+      function renderContacts(contacts) {
+        const target = document.getElementById("contactList");
+        if (!contacts.length) {
+          target.innerHTML = "<p>No contact messages yet.</p>";
+          return;
+        }
+
+        const rows = contacts
+          .map(
+            (item) => `
+              <tr>
+                <td>${item.id}</td>
+                <td>${escapeHtml(item.name)}</td>
+                <td>${escapeHtml(item.email)}</td>
+                <td>${escapeHtml(item.message)}</td>
+                <td>${formatDate(item.submitted_at)}</td>
+              </tr>
+            `
+          )
+          .join("");
+
+        target.innerHTML = `
+          <div style="overflow:auto">
+            <table style="width:100%; border-collapse:collapse">
+              <thead>
+                <tr>
+                  <th style="text-align:left; padding:8px; border-bottom:1px solid #e5e7eb">ID</th>
+                  <th style="text-align:left; padding:8px; border-bottom:1px solid #e5e7eb">Name</th>
+                  <th style="text-align:left; padding:8px; border-bottom:1px solid #e5e7eb">Email</th>
+                  <th style="text-align:left; padding:8px; border-bottom:1px solid #e5e7eb">Message</th>
+                  <th style="text-align:left; padding:8px; border-bottom:1px solid #e5e7eb">Submitted</th>
+                </tr>
+              </thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>
+        `;
+      }
+
+      function renderQuotes(quotes) {
+        const target = document.getElementById("quoteList");
+        if (!quotes.length) {
+          target.innerHTML = "<p>No quote requests yet.</p>";
+          return;
+        }
+
+        const rows = quotes
+          .map((item) => {
+            const file = item.file_name
+              ? `<a href="/uploads/${encodeURIComponent(item.file_name)}" target="_blank" rel="noreferrer">${escapeHtml(item.file_name)}</a>`
+              : "-";
+            const emailCell = escapeHtml(item.email || "-");
+            return `
+              <tr>
+                <td>${item.id}</td>
+                <td>${escapeHtml(item.name)}</td>
+                <td>${emailCell}</td>
+                <td>${escapeHtml(item.service_type)}</td>
+                <td>${escapeHtml(item.details || "-")}</td>
+                <td>${file}</td>
+                <td>${formatDate(item.submitted_at)}</td>
+              </tr>
+            `;
+          })
+          .join("");
+
+        target.innerHTML = `
+          <div style="overflow:auto">
+            <table style="width:100%; border-collapse:collapse">
+              <thead>
+                <tr>
+                  <th style="text-align:left; padding:8px; border-bottom:1px solid #e5e7eb">ID</th>
+                  <th style="text-align:left; padding:8px; border-bottom:1px solid #e5e7eb">Name</th>
+                  <th style="text-align:left; padding:8px; border-bottom:1px solid #e5e7eb">Email</th>
+                  <th style="text-align:left; padding:8px; border-bottom:1px solid #e5e7eb">Service</th>
+                  <th style="text-align:left; padding:8px; border-bottom:1px solid #e5e7eb">Details</th>
+                  <th style="text-align:left; padding:8px; border-bottom:1px solid #e5e7eb">File</th>
+                  <th style="text-align:left; padding:8px; border-bottom:1px solid #e5e7eb">Submitted</th>
+                </tr>
+              </thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>
+        `;
+      }
+
+      let currentQuotes = [];
+
+      function quotesToCsv(quotes) {
+        const headers = ["ID", "Name", "Email", "Service", "Details", "File", "Submitted"];
+        const rows = quotes.map((item) => [
+          item.id,
+          item.name,
+          item.email || "",
+          item.service_type,
+          item.details || "",
+          item.file_name || "",
+          formatDate(item.submitted_at),
+        ]);
+        return [headers, ...rows]
+          .map((row) => row.map((value) => `"${String(value).replace(/"/g, '""')}"`).join(","))
+          .join("\r\n");
+      }
+
+      function downloadCsv(filename, contents) {
+        const blob = new Blob([contents], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", filename);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }
+
+      async function loadSubmissions() {
+        const contactList = document.getElementById("contactList");
+        const quoteList = document.getElementById("quoteList");
+        try {
+          const response = await fetch("/api/admin/submissions");
+          const result = await response.json();
+          if (!response.ok || !result.ok) {
+            throw new Error(result.error || "Failed to load submissions.");
+          }
+          renderContacts(result.contacts || []);
+          renderQuotes(result.quotes || []);
+          currentQuotes = result.quotes || [];
+          markUpdated();
+        } catch (error) {
+          const message = error.message || "Error loading submissions.";
+          contactList.innerHTML = `<p style="color:#d93025">${escapeHtml(message)}</p>`;
+          quoteList.innerHTML = `<p style="color:#d93025">${escapeHtml(message)}</p>`;
+        }
+      }
+
+      const refreshBtn = document.getElementById("refreshBtn");
+      const lastUpdated = document.getElementById("lastUpdated");
+      const printQuotesBtn = document.getElementById("printQuotesBtn");
+      const downloadQuotesBtn = document.getElementById("downloadQuotesBtn");
+
+      function markUpdated() {
+        if (lastUpdated) lastUpdated.textContent = `Last: ${new Date().toLocaleTimeString()}`;
+      }
+
+      if (refreshBtn) {
+        refreshBtn.addEventListener("click", () => {
+          loadSubmissions();
+        });
+      }
+
+      if (printQuotesBtn) {
+        printQuotesBtn.addEventListener("click", () => {
+          window.print();
+        });
+      }
+
+      if (downloadQuotesBtn) {
+        downloadQuotesBtn.addEventListener("click", () => {
+          const csv = quotesToCsv(currentQuotes);
+          downloadCsv(`quote-requests-${new Date().toISOString().slice(0, 10)}.csv`, csv);
+        });
+      }
+
+      // Auto-refresh every 20 seconds
+      setInterval(() => loadSubmissions(), 20000);
+
+      loadSubmissions();
+    </script>
+  </body>
+</html>

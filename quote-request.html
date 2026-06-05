@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Request a Quote | Franktec – AD Solutions</title>
+    <meta name="description" content="Request a quotation for design, print, video, branding, or apparel from Franktec – AD Solutions." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="navbar">
+      <div class="container nav-wrap">
+        <a class="logo" href="index.html">Franktec – AD Solutions</a>
+        <button type="button" class="menu-btn" aria-label="Toggle menu">Menu</button>
+        <nav class="menu">
+          <a href="index.html">Home</a>
+          <a href="about.html">About</a>
+          <a href="services.html">Services</a>
+          <a href="pricing.html">Pricing</a>
+          <a href="portfolio.html">Portfolio</a>
+          <a href="contact.html">Contact</a>
+          <a class="active" href="quote-request.html">Quote</a>
+        </nav>
+      </div>
+    </header>
+
+    <div class="page-hero">
+      <div class="container">
+        <h1>Request a quote</h1>
+        <p>Tell us what you need—quantities, deadlines, and delivery—and we will prepare a customised quotation.</p>
+      </div>
+    </div>
+
+    <section class="section">
+      <div class="container" style="max-width: 760px">
+        <article class="card">
+          <div class="card-body">
+            <form id="quoteForm" enctype="multipart/form-data">
+              <label
+                >Name
+                <input type="text" name="name" required placeholder="Your full name" autocomplete="name" />
+              </label>
+              <label
+                >Email
+                <input type="email" name="email" placeholder="Your email (optional)" autocomplete="email" />
+              </label>
+              <label
+                >Service type
+                <select name="serviceType" required>
+                  <option value="">Select a service</option>
+                  <option>Graphics designing</option>
+                  <option>Publications</option>
+                  <option>T-shirt printing</option>
+                  <option>Secretarial services</option>
+                  <option>Clothes designing &amp; printing</option>
+                  <option>General printing</option>
+                  <option>Commercial video</option>
+                  <option>Binding</option>
+                  <option>Branding</option>
+                  <option>Other / multiple services</option>
+                </select>
+              </label>
+              <label
+                >Project details
+                <textarea name="details" rows="6" placeholder="Scope, quantities, sizes, deadline, delivery location"></textarea>
+              </label>
+              <label
+                >Attach file (optional)
+                <input type="file" name="fileUpload" />
+              </label>
+              <button class="btn btn-accent" type="submit">Submit request</button>
+              <p id="quoteStatus"></p>
+            </form>
+          </div>
+        </article>
+        <p class="section-sub" style="margin-top: 1.25rem">
+          See <a href="pricing.html">indicative pricing</a> for fabrics, books, and apparel. Formal quotes may differ based on finishing and volume.
+        </p>
+      </div>
+    </section>
+
+    <footer>
+      <div class="container footer-grid">
+        <div>
+          <h3>Franktec – AD Solutions</h3>
+          <p>Full-service marketing communications and creative support in Ghana.</p>
+        </div>
+        <div>
+          <h4>Quick links</h4>
+          <p><a href="services.html">Services</a></p>
+          <p><a href="pricing.html">Pricing</a></p>
+          <p><a href="contact.html">Contact</a></p>
+        </div>
+        <div>
+          <h4>Contact</h4>
+          <p>
+            <a href="tel:+233234100444">+233 (0) 234 100 444</a> ·
+            <a href="tel:+233257063910">+233 (0) 257 063 910</a>
+          </p>
+          <p><a href="mailto:frantecsolution@gmail.com">frantecsolution@gmail.com</a></p>
+          <p>Bubiashie, Nii Asere Ayitey Road, opposite Accra Academy North Gate</p>
+        </div>
+      </div>
+      <div class="copy">&copy; <span class="year"></span> Franktec – AD Solutions. All rights reserved.</div>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
